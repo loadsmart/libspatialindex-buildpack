@@ -14,4 +14,4 @@ cd "${BUILD_DIR}"
 
 download
 verify_checksum
-install
+install "${BUILD_DIR}"

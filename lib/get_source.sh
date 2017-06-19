@@ -35,7 +35,8 @@ verify_checksum() {
 
 
 install() {
-    local prefix="/app/.libs/libspatialindex"
+    local build_dir="$1"
+    local prefix="${build_dir}/.libs/libspatialindex"
 
     header "Installing libspatialindex"
     info "Extracting contents"
