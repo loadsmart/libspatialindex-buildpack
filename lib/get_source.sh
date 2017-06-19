@@ -14,7 +14,7 @@ download() {
     fi
 
     header "Downloading spatialindex-src from '${source_url}'"
-    curl -o "${cache_dir}/spatialindex-src.tar.gz" --silent "${source_url}"
+    curl -o "${cache_dir}/spatialindex-src.tar.gz" --silent --show-error "${source_url}"
 }
 
 
@@ -30,7 +30,7 @@ verify_checksum() {
     local computed_checksum ref_checksum
 
     info "Verifying checksum"
-    curl -o "${cache_dir}/checksum.md5" --silent "${CHECKSUM_URL}"
+    curl -o "${cache_dir}/checksum.md5" --silent --show-error "${CHECKSUM_URL}"
     computed_checksum=$(openssl md5 "${cache_dir}/spatialindex-src.tar.gz" | cut -d' ' -f2)
     ref_checksum=$(_get_checksum_from_file checksum.md5)
     if [[ "$computed_checksum" != "$ref_checksum" ]]
