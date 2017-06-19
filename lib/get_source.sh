@@ -5,10 +5,15 @@ CHECKSUM_URL="http://download.osgeo.org/libspatialindex/spatialindex-src-${VERSI
 
 
 download() {
-    local source_url="${1:-$SOURCE_URL}"
+    local source_url="$1"
     local cache_dir="$2"
 
-    header "Downloading spatialindex-src"
+    if [ -z "$source_url" ]
+    then
+        source_url="${SOURCE_URL}"
+    fi
+
+    header "Downloading spatialindex-src from '${source_url}'"
     curl -o "${cache_dir}/spatialindex-src.tar.gz" --silent "${source_url}"
 }
 
