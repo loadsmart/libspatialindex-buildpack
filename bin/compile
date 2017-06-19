@@ -9,9 +9,10 @@ BUILDPACK_HOME="$(cd "$CURRENT_DIR/.." || exit; pwd)"
 . "$BUILDPACK_HOME/lib/all.sh"
 
 BUILD_DIR="${1:-}"
+CACHE_DIR="${2:-}"
 
 cd "${BUILD_DIR}"
 
-download
-verify_checksum
-install "${BUILD_DIR}"
+download "" "${CACHE_DIR}"
+verify_checksum "${CACHE_DIR}"
+install "${BUILD_DIR}" "${CACHE_DIR}"

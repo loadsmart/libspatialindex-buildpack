@@ -6,8 +6,10 @@ CHECKSUM_URL="http://download.osgeo.org/libspatialindex/spatialindex-src-${VERSI
 
 download() {
     local source_url="${1:-$SOURCE_URL}"
+    local cache_dir="$2"
+
     header "Downloading spatialindex-src"
-    curl -o spatialindex-src.tar.gz --silent "${source_url}"
+    curl -o "${cache_dir}/spatialindex-src.tar.gz" --silent "${source_url}"
 }
 
 
@@ -19,11 +21,12 @@ _get_checksum_from_file() {
 
 
 verify_checksum() {
+    local cache_dir="$1"
     local computed_checksum ref_checksum
 
     info "Verifying checksum"
-    curl -o checksum.md5 --silent "${CHECKSUM_URL}"
-    computed_checksum=$(openssl md5 spatialindex-src.tar.gz | cut -d' ' -f2)
+    curl -o "${cache_dir}/checksum.md5" --silent "${CHECKSUM_URL}"
+    computed_checksum=$(openssl md5 "${cache_dir}/spatialindex-src.tar.gz" | cut -d' ' -f2)
     ref_checksum=$(_get_checksum_from_file checksum.md5)
     if [[ "$computed_checksum" != "$ref_checksum" ]]
     then
@@ -34,14 +37,15 @@ verify_checksum() {
 }
 
 
-install() {
+compile() {
     local build_dir="$1"
-    local prefix="${build_dir}/.libs/libspatialindex"
+    local cache_dir="$2"
+    local prefix="${build_dir}/libspatialindex"
 
     header "Installing libspatialindex"
     info "Extracting contents"
-    tar xzf spatialindex-src.tar.gz
-    cd "spatialindex-src-${VERSION}" || exit 1
+    tar xzf "${cache_dir}/spatialindex-src.tar.gz"
+    cd "${cache_dir}/spatialindex-src-${VERSION}" || exit 1
     info "Running configure"
     ./configure --prefix="${prefix}"
     info "Compiling"
@@ -49,5 +53,16 @@ install() {
     info "Installing"
     make install
 
-    header "libspatialindex installed on ${prefix}"
+    header "libspatialindex compiled on ${prefix}"
+}
+
+
+install() {
+    local build_dir="$1"
+    local cache_dir="$2"
+
+    header "Copying libspatialindex to .libs"
+
+    mkdir "${build_dir}/.libs"
+    cp -a "${cache_dir}/libspatialindex" "${build_dir}/.libs"
 }
