@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+CURRENT_DIR="$(dirname "${0:-}")"
+BUILDPACK_HOME="$(cd "$CURRENT_DIR/.." || exit; pwd)"
+
+# shellcheck source=lib/all.sh
+source "$BUILDPACK_HOME/lib/all.sh"
+
+BUILD_DIR="${1:-}"
+
+cd "${BUILD_DIR}"
+
+download
+verify_checksum
+install
