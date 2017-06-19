@@ -25,7 +25,7 @@ verify_checksum() {
     curl -o checksum.md5 --silent "${CHECKSUM_URL}"
     computed_checksum=$(openssl md5 spatialindex-src.tar.gz | cut -d' ' -f2)
     ref_checksum=$(_get_checksum_from_file checksum.md5)
-    [[ "$computed_checksum" == "$ref_checksum" ]] || header "Checksum failed - expected ${ref_checksum} but found ${computed_checksum}" && exit 1
+    [[ "$computed_checksum" == "$ref_checksum" ]] || header "Checksum failed - expected '${ref_checksum}' but found '${computed_checksum}'" && exit 1
     rm -f checksum.md5
 }
 
