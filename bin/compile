@@ -10,7 +10,7 @@ echo "DEBUG: CURRENT_DIR: $CURRENT_DIR"
 echo "DEBUG: BUILDPACK_HOME: $BUILDPACK_HOME"
 
 # shellcheck source=lib/all.sh
-source "$BUILDPACK_HOME/lib/all.sh"
+. "$BUILDPACK_HOME/lib/all.sh"
 
 BUILD_DIR="${1:-}"
 
