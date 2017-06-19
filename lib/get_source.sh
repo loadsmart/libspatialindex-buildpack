@@ -11,10 +11,21 @@ download() {
 }
 
 
+_get_checksum_from_file() {
+    local filename="$1"
+
+    cut -f2 -d= "$filename" | tr -d ' '
+}
+
+
 verify_checksum() {
+    local computed_checksum ref_checksum
+
     info "Verifying checksum"
     curl -o checksum.md5 --silent "${CHECKSUM_URL}"
-    openssl md5 spatialindex-src.tar.gz | cut -d' ' -f2
+    computed_checksum=$(openssl md5 spatialindex-src.tar.gz | cut -d' ' -f2)
+    ref_checksum=$(_get_checksum_from_file checksum.md5)
+    [ "$computed_checksum" == "$ref_checksum" ] || exit 1
     rm -f checksum.md5
 }
 
