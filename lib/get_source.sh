@@ -14,7 +14,7 @@ download() {
     fi
 
     header "Downloading spatialindex-src from '${source_url}'"
-    curl -o "${cache_dir}/spatialindex-src.tar.gz" --silent --show-error "${source_url}"
+    curl -o "spatialindex-src.tar.gz" --silent --show-error "${source_url}"
 }
 
 
@@ -30,8 +30,8 @@ verify_checksum() {
     local computed_checksum ref_checksum
 
     info "Verifying checksum"
-    curl -o "${cache_dir}/checksum.md5" --silent --show-error "${CHECKSUM_URL}"
-    computed_checksum=$(openssl md5 "${cache_dir}/spatialindex-src.tar.gz" | cut -d' ' -f2)
+    curl -o "checksum.md5" --silent --show-error "${CHECKSUM_URL}"
+    computed_checksum=$(openssl md5 "spatialindex-src.tar.gz" | cut -d' ' -f2)
     ref_checksum=$(_get_checksum_from_file checksum.md5)
     if [[ "$computed_checksum" != "$ref_checksum" ]]
     then
@@ -45,12 +45,12 @@ verify_checksum() {
 compile() {
     local build_dir="$1"
     local cache_dir="$2"
-    local prefix="${build_dir}/libspatialindex"
+    local prefix="${cache_dir}/libspatialindex"
 
     header "Installing libspatialindex"
     info "Extracting contents"
-    tar xzf "${cache_dir}/spatialindex-src.tar.gz"
-    cd "${cache_dir}/spatialindex-src-${VERSION}" || exit 1
+    tar xzf "spatialindex-src.tar.gz"
+    cd "spatialindex-src-${VERSION}" || exit 1
     info "Running configure"
     ./configure --prefix="${prefix}"
     info "Compiling"
