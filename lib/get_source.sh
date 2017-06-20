@@ -75,6 +75,14 @@ install() {
     header "Installing libspatialindex in ${build_dir}/.libs"
 
     rsync --links -r "${cache_dir}/" "${build_dir}/.libs"
+
+    header "Setting paths"
+
+    mkdir -p .profile.d
+    cat << EOF > .profile.d/spatialindex.sh
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/app/.libs/lib
+export SPATIALINDEX_C_LIBRARY=libspatialindex_c.so.4
+EOF
 }
 
 
