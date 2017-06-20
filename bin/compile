@@ -11,7 +11,11 @@ BUILDPACK_HOME="$(cd "$CURRENT_DIR/.." || exit; pwd)"
 BUILD_DIR="${1:-}"
 CACHE_DIR="${2:-}"
 
+mkdir -p "${CACHE_DIR}"
+
 cd "${BUILD_DIR}"
+
+lib_already_compiled "${CACHE_DIR}"
 
 download "" "${CACHE_DIR}"
 verify_checksum "${CACHE_DIR}"

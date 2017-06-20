@@ -42,6 +42,16 @@ verify_checksum() {
 }
 
 
+lib_already_compiled() {
+    local prefix="$1"
+    if [ -f "${prefix}/lib/libspatialindex.so" ]
+    then
+        header "libspatialindex already installed, skipping"
+        exit 0
+    fi
+}
+
+
 compile() {
     local cache_dir="$2"
     local prefix="${cache_dir}"
