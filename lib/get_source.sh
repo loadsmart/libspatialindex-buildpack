@@ -45,9 +45,16 @@ verify_checksum() {
 compile() {
     local build_dir="$1"
     local cache_dir="$2"
-    local prefix="${cache_dir}/libspatialindex"
+    local prefix="${cache_dir}"
 
     header "Installing libspatialindex"
+
+    if [ -f "${prefix}/lib/libspatialindex.so" ]
+    then
+        info "libspatialindex already compiled, skipping"
+        return
+    fi
+
     info "Extracting contents"
     tar xzf "spatialindex-src.tar.gz"
     cd "spatialindex-src-${VERSION}" || exit 1
@@ -69,5 +76,5 @@ install() {
     header "Copying libspatialindex to .libs"
 
     mkdir "${build_dir}/.libs"
-    cp -a "${cache_dir}/libspatialindex" "${build_dir}/.libs"
+    cp -a "${cache_dir}" "${build_dir}/.libs"
 }
