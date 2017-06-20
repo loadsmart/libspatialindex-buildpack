@@ -17,3 +17,4 @@ download "" "${CACHE_DIR}"
 verify_checksum "${CACHE_DIR}"
 compile "${BUILD_DIR}" "${CACHE_DIR}"
 install "${BUILD_DIR}" "${CACHE_DIR}"
+cleanup

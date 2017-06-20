@@ -76,3 +76,10 @@ install() {
 
     rsync --links -r "${cache_dir}/" "${build_dir}/.libs"
 }
+
+
+cleanup() {
+    rm -f "spatialindex-src.tar.gz"
+    rm -f "checksum.md5"
+    rm -rf "spatialindex-src-${VERSION}"
+}
