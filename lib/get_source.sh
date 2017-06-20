@@ -69,9 +69,10 @@ compile() {
 
 
 install() {
+    local build_dir="$1"
     local cache_dir="$2"
 
-    header "Installing libspatialindex in /usr/local"
+    header "Installing libspatialindex in ${build_dir}/.libs"
 
-    rsync -r "${cache_dir}" "/usr/local"
+    rsync -r "${cache_dir}" "${build_dir}/.libs"
 }
