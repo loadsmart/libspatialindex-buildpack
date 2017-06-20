@@ -72,21 +72,23 @@ install() {
     local build_dir="$1"
     local cache_dir="$2"
 
-    header "Installing libspatialindex in ${build_dir}/.libs"
+    header "Installing libspatialindex in ${build_dir}/.vendor-libs"
 
-    rsync --links -r "${cache_dir}/" "${build_dir}/.libs"
+    rsync --links -r "${cache_dir}/" "${build_dir}/.vendor-libs"
 
     header "Setting paths"
 
     mkdir -p .profile.d
     cat << EOF > .profile.d/spatialindex.sh
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/app/.libs/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/app/.vendor-libs/lib
 export SPATIALINDEX_C_LIBRARY=libspatialindex_c.so.4
 EOF
 }
 
 
 cleanup() {
+    header "Cleaning up downloaded files"
+
     rm -f "spatialindex-src.tar.gz"
     rm -f "checksum.md5"
     rm -rf "spatialindex-src-${VERSION}"
