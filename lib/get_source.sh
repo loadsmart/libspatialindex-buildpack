@@ -43,7 +43,6 @@ verify_checksum() {
 
 
 compile() {
-    local build_dir="$1"
     local cache_dir="$2"
     local prefix="${cache_dir}"
 
@@ -70,11 +69,9 @@ compile() {
 
 
 install() {
-    local build_dir="$1"
     local cache_dir="$2"
 
-    header "Copying libspatialindex to .libs"
+    header "Installing libspatialindex in /usr/local"
 
-    mkdir "${build_dir}/.libs"
-    cp -a "${cache_dir}" "${build_dir}/.libs"
+    rsync -r "${cache_dir}" "/usr/local"
 }
