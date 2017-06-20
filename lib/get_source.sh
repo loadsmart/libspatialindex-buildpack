@@ -33,7 +33,7 @@ verify_checksum() {
     curl -o "checksum.md5" --silent --show-error "${CHECKSUM_URL}"
     computed_checksum=$(openssl md5 "spatialindex-src.tar.gz" | cut -d' ' -f2)
     ref_checksum=$(_get_checksum_from_file checksum.md5)
-    if [[ "$computed_checksum" != "$ref_checksum" ]]
+    if [ "$computed_checksum" != "$ref_checksum" ]
     then
         header "Checksum failed - expected '${ref_checksum}' but found '${computed_checksum}'"
         exit 1
