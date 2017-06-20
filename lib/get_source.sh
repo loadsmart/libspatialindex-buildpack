@@ -74,5 +74,5 @@ install() {
 
     header "Installing libspatialindex in ${build_dir}/.libs"
 
-    rsync --links -r "${cache_dir}" "${build_dir}/.libs"
+    rsync --links -r "${cache_dir}/*" "${build_dir}/.libs"
 }
