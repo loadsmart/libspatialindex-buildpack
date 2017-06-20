@@ -11,3 +11,6 @@
 
 test: .libs/heroku-buildpack-testrunner .libs/shunit2
 	SHUNIT_HOME=$(realpath $(@D))/.libs/shunit2/source/2.1 ./.libs/heroku-buildpack-testrunner/bin/run .
+
+compile:
+	TMPDIR=`pwd`/test/fixtures/tmp sh ./bin/compile `pwd`/test/fixtures/build_dir `pwd`/test/fixtures/cache_dir

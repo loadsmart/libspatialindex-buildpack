@@ -1,96 +1,88 @@
-VERSION="1.8.5"
-
-SOURCE_URL="http://download.osgeo.org/libspatialindex/spatialindex-src-${VERSION}.tar.gz"
-CHECKSUM_URL="http://download.osgeo.org/libspatialindex/spatialindex-src-${VERSION}.tar.gz.md5"
-
-
-download() {
-    local source_url="$1"
-    local cache_dir="$2"
-
-    if [ -z "$source_url" ]
-    then
-        source_url="${SOURCE_URL}"
-    fi
-
-    header "Downloading spatialindex-src from '${source_url}'"
-    curl -o "spatialindex-src.tar.gz" --silent --show-error "${source_url}"
+download_source() {
+    local url="$1"
+    _download "${url}" "${TMPDIR}/spatialindex-src.tar.gz"
+    echo "${TMPDIR}/spatialindex-src.tar.gz"
 }
 
 
-_get_checksum_from_file() {
+download_checksum() {
+    local url="$1"
+    _download "${url}" "${TMPDIR}/checksum.md5"
+    echo "${TMPDIR}/checksum.md5"
+}
+
+
+compute_checksum() {
     local filename="$1"
-
-    cut -f2 -d= "$filename" | tr -d ' '
+    openssl md5 "${filename}" | cut -d' ' -f2
 }
 
 
-verify_checksum() {
-    local cache_dir="$1"
-    local computed_checksum ref_checksum
+extract_checksum_from_file() {
+    local filename="$1"
+    cut -f2 -d= "${filename}" | tr -d ' '
+}
 
-    info "Verifying checksum"
-    curl -o "checksum.md5" --silent --show-error "${CHECKSUM_URL}"
-    computed_checksum=$(openssl md5 "spatialindex-src.tar.gz" | cut -d' ' -f2)
-    ref_checksum=$(_get_checksum_from_file checksum.md5)
-    if [ "$computed_checksum" != "$ref_checksum" ]
+
+validate_file() {
+    local filename="$1"
+    local expected_checksum="$2"
+
+    info "Verifying checksum for downloaded file '${filename}'"
+
+    computed_checksum=$(compute_checksum "$filename")
+    if [[ "$computed_checksum" == "$expected_checksum" ]]
     then
-        header "Checksum failed - expected '${ref_checksum}' but found '${computed_checksum}'"
-        exit 1
+        return 0
+    else
+        return 1
     fi
-    rm -f checksum.md5
 }
 
 
-lib_already_compiled() {
+is_installed() {
     local prefix="$1"
-    if [ -f "${prefix}/lib/libspatialindex.so" ]
+    if [ -f "${prefix}/lib/libspatialindex.so" ] || [ -f "${prefix}/lib/libspatialindex.a" ]
     then
-        header "libspatialindex already installed, skipping"
-        exit 0
+        return 0
+    else
+        return 1
     fi
 }
 
 
 compile() {
-    local cache_dir="$2"
-    local prefix="${cache_dir}"
+    local tarball="$1"
+    local prefix="$2"
 
-    header "Installing libspatialindex"
+    header "Installing spatialindex"
 
-    if [ -f "${prefix}/lib/libspatialindex.so" ]
-    then
-        info "libspatialindex already compiled, skipping"
-        return
-    fi
+    info "Extracting contents to ${TMPDIR}"
+    tar -xzf "${tarball}" -C "${TMPDIR}"
+    cd "${TMPDIR}/"spatialindex-src-* || exit 1
 
-    info "Extracting contents"
-    tar xzf "spatialindex-src.tar.gz"
-    cd "spatialindex-src-${VERSION}" || exit 1
-    info "Running configure"
+    info "Configuring"
     ./configure --prefix="${prefix}"
+
     info "Compiling"
     make
+
     info "Installing"
     make install
 
-    header "libspatialindex compiled on ${prefix}"
+    header "spatialindex compiled on ${prefix}"
 }
 
 
-install() {
+setup_env() {
     local build_dir="$1"
-    local cache_dir="$2"
-
-    header "Installing libspatialindex in ${build_dir}/.vendor-libs"
-
-    rsync --links -r "${cache_dir}/" "${build_dir}/.vendor-libs"
+    local prefix="$2"
 
     header "Setting paths"
 
-    mkdir -p .profile.d
-    cat << EOF > .profile.d/spatialindex.sh
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/app/.vendor-libs/lib
+    mkdir -p "${build_dir}/.profile.d"
+    cat << EOF > "${build_dir}/.profile.d/spatialindex.sh"
+export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${prefix}/lib
 export SPATIALINDEX_C_LIBRARY=libspatialindex_c.so.4
 EOF
 }
@@ -99,7 +91,7 @@ EOF
 cleanup() {
     header "Cleaning up downloaded files"
 
-    rm -f "spatialindex-src.tar.gz"
-    rm -f "checksum.md5"
-    rm -rf "spatialindex-src-${VERSION}"
+    rm -f "${TMPDIR}/spatialindex-src.tar.gz"
+    rm -f "${TMPDIR}/checksum.md5"
+    rm -rf "${TMPDIR}/"spatialindex-src-*
 }

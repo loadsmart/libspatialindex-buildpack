@@ -11,14 +11,39 @@ BUILDPACK_HOME="$(cd "$CURRENT_DIR/.." || exit; pwd)"
 BUILD_DIR="${1:-}"
 CACHE_DIR="${2:-}"
 
-mkdir -p "${CACHE_DIR}"
+SPATIALINDEX_VERSION="1.8.5"
+TMPDIR="${TMPDIR:-$CACHE_DIR}"
+INSTALL_PREFIX="${BUILD_DIR}/.vendor-libs/${SPATIALINDEX_VERSION}"
 
-cd "${BUILD_DIR}"
+SOURCE_URL="http://download.osgeo.org/libspatialindex/spatialindex-src-${SPATIALINDEX_VERSION}.tar.gz"
+CHECKSUM_URL="http://download.osgeo.org/libspatialindex/spatialindex-src-${SPATIALINDEX_VERSION}.tar.gz.md5"
 
-lib_already_compiled "${CACHE_DIR}"
+mkdir -p "${TMPDIR}"
 
-download "" "${CACHE_DIR}"
-verify_checksum "${CACHE_DIR}"
-compile "${BUILD_DIR}" "${CACHE_DIR}"
-install "${BUILD_DIR}" "${CACHE_DIR}"
+header "Installing spatialindex version ${SPATIALINDEX_VERSION}"
+
+if is_installed "$INSTALL_PREFIX"
+then
+    info "spatialindex already installed, skipping"
+else
+    info "Downloading spatialindex-src from '${SOURCE_URL}'"
+    SOURCE_FILE=$(download_source "${SOURCE_URL}")
+
+    info "Downloading checksum file from '${CHECKSUM_URL}'"
+    CHECKSUM_FILE=$(download_checksum "${CHECKSUM_URL}")
+
+    EXPECTED_HASH=$(extract_checksum_from_file "${CHECKSUM_FILE}")
+
+    validate_file "${SOURCE_FILE}" "${EXPECTED_HASH}"
+    if [ $? -ne 0 ]
+    then
+        header "Checksum failed for ${SOURCE_FILE} - expected ${EXPECTED_HASH}"
+        cleanup
+        exit 2
+    fi
+
+    compile "${SOURCE_FILE}" "${INSTALL_PREFIX}"
+fi
+
+setup_env "${BUILD_DIR}" "${INSTALL_PREFIX}"
 cleanup
