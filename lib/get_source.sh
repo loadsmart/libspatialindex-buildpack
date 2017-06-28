@@ -83,7 +83,7 @@ setup_env() {
     mkdir -p "${build_dir}/.profile.d"
     cat << EOF > "${build_dir}/.profile.d/spatialindex.sh"
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${prefix}/lib
-export SPATIALINDEX_C_LIBRARY=libspatialindex_c.so.4
+export SPATIALINDEX_C_LIBRARY=${prefix}/lib/libspatialindex_c.so
 EOF
 }
 

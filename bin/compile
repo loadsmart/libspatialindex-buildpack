@@ -45,5 +45,5 @@ else
     compile "${SOURCE_FILE}" "${INSTALL_PREFIX}"
 fi
 
-setup_env "${BUILD_DIR}" "${INSTALL_PREFIX}"
+setup_env "${BUILD_DIR}" "/app/.vendor-libs/${SPATIALINDEX_VERSION}"
 cleanup
